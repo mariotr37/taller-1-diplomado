@@ -1,9 +1,6 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
-import 'package:pointycastle/asymmetric/api.dart';
-import 'package:rsa_encrypt/rsa_encrypt.dart';
-import 'package:pointycastle/api.dart' as crypto;
+import 'package:http/http.dart' as http;
 // ignore: avoid_web_libraries_in_flutter
 import 'dart:html' as html;
 
@@ -37,15 +34,26 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  crypto.AsymmetricKeyPair<crypto.PublicKey, crypto.PrivateKey>? _keyPair;
+  Future<void> _sendPostRequest(String name) async {
+    final url = Uri.parse('http://back:5000/guardar_usuario'); // URL del backend
+    final response = await http.post(
+      url,
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(<String, String>{
+        'name': name,
+      }),
+    );
 
-  Future<void> _generateKeys() async {
-    var keyHelper = RsaKeyHelper();
-    var keyPair =
-        await keyHelper.computeRSAKeyPair(keyHelper.getSecureRandom());
-    setState(() {
-      _keyPair = keyPair;
-    });
+    if (response.statusCode == 200) {
+      final responseData = jsonDecode(response.body);
+      final privateKey = responseData['privateKey'];
+      _downloadPrivateKey(privateKey, 'private_key');
+      print('Usuario guardado exitosamente: ${responseData['message']}');
+    } else {
+      print('Error: ${response.statusCode}');
+    }
   }
 
   void _downloadPrivateKey(String privateKey, String fileName) {
@@ -173,7 +181,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                             color: Colors.grey, width: 1),
                                       ),
                                       hintText: 'Ingresa tu nombre',
-                                       contentPadding:
+                                      contentPadding:
                                           const EdgeInsets.only(left: 20),
                                       hintStyle: const TextStyle(
                                         color: Colors.grey,
@@ -202,14 +210,8 @@ class _MyHomePageState extends State<MyHomePage> {
                           child: ElevatedButton(
                             onPressed: () {
                               if (_formKeyName.currentState!.validate()) {
-                                _generateKeys().then((_) {
-                                  final name = _nameController.text;
-                                  print('Nombre: $name');
-                                  print(
-                                      'Clave Pública: ${_keyPair!.publicKey}');
-                                  print(
-                                      'Clave Privada: ${_keyPair!.privateKey}');
-                                });
+                                final name = _nameController.text;
+                                _sendPostRequest(name);
                               }
                             },
                             style: ButtonStyle(
@@ -220,26 +222,13 @@ class _MyHomePageState extends State<MyHomePage> {
                                       vertical: 18, horizontal: 30)),
                             ),
                             child: const Text(
-                              'Generar Llaves',
+                              'Enviar Nombre',
                               style: TextStyle(
                                 color: Colors.white,
                               ),
                             ),
                           ),
                         ),
-                        if (_keyPair != null) ...[
-                          Text('Clave Pública: ${_keyPair!.publicKey}'),
-                          ElevatedButton(
-                            onPressed: () {
-                              String keyBase64Encrypted = RsaKeyHelper()
-                                  .encodePrivateKeyToPemPKCS1(
-                                      _keyPair!.privateKey as RSAPrivateKey);
-                              _downloadPrivateKey(
-                                  keyBase64Encrypted, 'private_key');
-                            },
-                            child: const Text('Descargar Clave Privada'),
-                          ),
-                        ],
                       ],
                     ),
                   )
