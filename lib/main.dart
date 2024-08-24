@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -34,26 +36,48 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  Future<void> _sendPostRequest(String name) async {
-    final url = Uri.parse('http://back:5000/guardar_usuario'); // URL del backend
-    final response = await http.post(
-      url,
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
-      body: jsonEncode(<String, String>{
-        'name': name,
-      }),
-    );
+  Future<void> _sendData() async {
+    final name = _nameController.text;
+    try {
+      final response = await http.post(
+        Uri.parse('http://back:5000/guardar_usuario'),
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode({"name": name}),
+      );
 
-    if (response.statusCode == 200) {
-      final responseData = jsonDecode(response.body);
-      final privateKey = responseData['privateKey'];
-      _downloadPrivateKey(privateKey, 'private_key');
-      print('Usuario guardado exitosamente: ${responseData['message']}');
-    } else {
-      print('Error: ${response.statusCode}');
+      if (response.statusCode == 200) {
+        final responseData = jsonDecode(response.body);
+        final privateKey = responseData['privateKey'];
+        final message = responseData['message'];
+
+        _showAlert(context, 'Éxito', message);
+        _downloadPrivateKey(privateKey, 'private_key');
+      } else {
+        _showAlert(context, 'Error', 'Error al guardar el usuario');
+      }
+    } catch (e) {
+      _showAlert(context, 'Error', 'Error de red: $e');
     }
+  }
+
+  void _showAlert(BuildContext context, String title, String content) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(title),
+          content: Text(content),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   void _downloadPrivateKey(String privateKey, String fileName) {
@@ -210,8 +234,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           child: ElevatedButton(
                             onPressed: () {
                               if (_formKeyName.currentState!.validate()) {
-                                final name = _nameController.text;
-                                _sendPostRequest(name);
+                                _sendData();
                               }
                             },
                             style: ButtonStyle(
@@ -222,7 +245,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                       vertical: 18, horizontal: 30)),
                             ),
                             child: const Text(
-                              'Enviar Nombre',
+                              'Guardar Usuario',
                               style: TextStyle(
                                 color: Colors.white,
                               ),
