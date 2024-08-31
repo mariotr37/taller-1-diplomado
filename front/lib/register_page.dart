@@ -148,7 +148,7 @@ class _RegisterPageState extends State<RegisterPage> {
             child: SingleChildScrollView(
               child: Container(
                 width: MediaQuery.of(context).size.width * 0.45,
-                padding: const EdgeInsets.all(16.0),
+                padding: const EdgeInsets.all(36.0),
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(20),

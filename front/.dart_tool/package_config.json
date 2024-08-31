@@ -188,6 +188,12 @@
       "languageVersion": "3.2"
     },
     {
+      "name": "flutter_file_downloader",
+      "rootUri": "file:///Users/jessicaospina/.pub-cache/hosted/pub.dev/flutter_file_downloader-2.0.0",
+      "packageUri": "lib/",
+      "languageVersion": "2.15"
+    },
+    {
       "name": "flutter_lints",
       "rootUri": "file:///Users/jessicaospina/.pub-cache/hosted/pub.dev/flutter_lints-3.0.2",
       "packageUri": "lib/",
@@ -482,7 +488,7 @@
       "languageVersion": "3.3"
     }
   ],
-  "generated": "2024-08-24T16:02:49.162210Z",
+  "generated": "2024-08-31T14:16:21.044930Z",
   "generator": "pub",
   "generatorVersion": "3.3.4"
 }
