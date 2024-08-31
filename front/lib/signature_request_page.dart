@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_file_downloader/flutter_file_downloader.dart';
+import 'package:file_selector/file_selector.dart';
 
 class SignatureRequestPage extends StatefulWidget {
   const SignatureRequestPage({super.key});
@@ -25,6 +26,7 @@ class _SignatureRequestPageState extends State<SignatureRequestPage> {
 
   // Variable para rastrear la selección de radio buttons
   int? _selectedRequestIndex;
+  String? _selectedFilePath;
 
   @override
   Widget build(BuildContext context) {
@@ -140,7 +142,7 @@ class _SignatureRequestPageState extends State<SignatureRequestPage> {
                 child: ElevatedButton(
                   onPressed: _selectedRequestIndex != null
                       ? () {
-                          // Implementar la funcionalidad para firmar el archivo seleccionado
+                          _showUploadDialog();
                         }
                       : null,
                   style: ElevatedButton.styleFrom(
@@ -202,6 +204,71 @@ class _SignatureRequestPageState extends State<SignatureRequestPage> {
                 Navigator.of(context).pop();
               },
               child: const Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  // Mostrar el diálogo para subir un archivo
+  void _showUploadDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          scrollable: true,
+          title: const Text('Subir lleva para autenticar la firma'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ElevatedButton(
+                onPressed: () async {
+                  final XFile? file = await openFile();
+
+                  if (file != null) {
+                    setState(() {
+                      _selectedFilePath = file.path;
+                    });
+
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('Archivo seleccionado: ${file.name}'),
+                      ),
+                    );
+                  }
+                },
+                child: const Text('Seleccionar archivo'),
+              ),
+              const SizedBox(height: 10),
+              if (_selectedFilePath != null)
+                Text(
+                  'Archivo seleccionado: $_selectedFilePath',
+                  style: const TextStyle(fontSize: 16),
+                  textAlign: TextAlign.center,
+                ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Cerrar el diálogo
+              },
+              child: const Text('Cancelar'),
+            ),
+            ElevatedButton(
+              onPressed: _selectedFilePath != null
+                  ? () {
+                      // Aquí puedes implementar la lógica para firmar el archivo
+                      Navigator.of(context).pop();
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Archivo firmado con éxito.'),
+                        ),
+                      );
+                    }
+                  : null, // Deshabilitar si no hay archivo seleccionado
+              child: const Text('Subir y firmar'),
             ),
           ],
         );

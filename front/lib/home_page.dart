@@ -38,17 +38,23 @@ class _HomePageState extends State<HomePage> {
 
   Widget _buildDrawer(BuildContext context) {
     return Drawer(
+      surfaceTintColor: Colors.white,
       child: Column(
         children: [
-          DrawerHeader(
+          Container(
+            alignment: Alignment.centerLeft,
+            height: 80,
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             decoration: BoxDecoration(
               color: Colors.purple[800],
             ),
             child: const Text(
-              'MENU',
+              'Menú',
               style: TextStyle(
                 color: Colors.white,
-                fontSize: 24,
+                fontSize: 28,
+                fontWeight: FontWeight.bold,
               ),
             ),
           ),
@@ -56,6 +62,7 @@ class _HomePageState extends State<HomePage> {
             child: ListView(
               padding: EdgeInsets.zero,
               children: [
+                const SizedBox(height: 50),
                 _buildDrawerItem(
                   icon: Icons.upload_file,
                   text: 'Upload Page',
@@ -73,6 +80,7 @@ class _HomePageState extends State<HomePage> {
                   index:
                       2, // Índice correspondiente a la página UserProfilePage
                 ),
+                SizedBox(height: MediaQuery.of(context).size.height * 0.55),
                 const Divider(),
                 ListTile(
                   title: const Text('Cerrar sesión'),
