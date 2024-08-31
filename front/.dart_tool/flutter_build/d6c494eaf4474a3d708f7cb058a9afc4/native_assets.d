@@ -1,0 +1,1 @@
+ /Users/jessicaospina/Documents/uniquindio/Diplomado/Módulo\ 3/Trabajo\ final/taller-1-diplomado-main/.dart_tool/flutter_build/d6c494eaf4474a3d708f7cb058a9afc4/native_assets.yaml: 
