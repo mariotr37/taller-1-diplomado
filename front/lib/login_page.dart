@@ -224,7 +224,7 @@ class _LoginPageState extends State<LoginPage> {
                                   ClipRRect(
                                     borderRadius: BorderRadius.circular(20.0),
                                     child: Image.asset(
-                                      'signature_image.png',
+                                      './assets/signature_image.png',
                                       width: 250,
                                       height: 250,
                                     ),
