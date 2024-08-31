@@ -4,7 +4,7 @@ FROM ubuntu:20.04
 ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update 
-RUN apt-get install -y curl git wget unzip libgconf-2-4 gdb libstdc++6 libglu1-mesa fonts-droid-fallback python3
+RUN apt-get install -y curl git wget unzip libgconf-2-4 gdb libstdc++6 libglu1-mesa fonts-droid-fallback python3 dos2unix
 RUN apt-get clean
 
 ENV DEBIAN_FRONTEND=dialog
@@ -28,13 +28,13 @@ RUN flutter config --enable-web
 # Copy files to container and build
 RUN mkdir /app/
 COPY . /app/
+RUN chmod +x /app/server/server.sh
+RUN dos2unix /app/server/server.sh
 WORKDIR /app/
 RUN flutter build web
 
 # Record the exposed port
 EXPOSE 9000
 
-# make server startup script executable and start the web server
-RUN ["chmod", "+x", "/app/server/server.sh"]
-
-ENTRYPOINT [ "/app/server/server.sh"]
+# Start the web server
+ENTRYPOINT ["/app/server/server.sh"]
