@@ -26,7 +26,6 @@ class _SignatureRequestPageState extends State<SignatureRequestPage> {
 
   // Variable para rastrear la selección de radio buttons
   int? _selectedRequestIndex;
-  String? _selectedFilePath;
 
   @override
   Widget build(BuildContext context) {
@@ -152,7 +151,7 @@ class _SignatureRequestPageState extends State<SignatureRequestPage> {
                       horizontal: 32.0,
                     ),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
+                      borderRadius: BorderRadius.circular(5),
                     ),
                   ),
                   child: const Text(
@@ -216,61 +215,96 @@ class _SignatureRequestPageState extends State<SignatureRequestPage> {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return AlertDialog(
-          scrollable: true,
-          title: const Text('Subir lleva para autenticar la firma'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              ElevatedButton(
-                onPressed: () async {
-                  final XFile? file = await openFile();
+        // Almacenamos el estado localmente para que no se restablezca al cerrar el diálogo
+        XFile? localSelectedFile;
 
-                  if (file != null) {
-                    setState(() {
-                      _selectedFilePath = file.path;
-                    });
-
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text('Archivo seleccionado: ${file.name}'),
-                      ),
-                    );
-                  }
-                },
-                child: const Text('Seleccionar archivo'),
-              ),
-              const SizedBox(height: 10),
-              if (_selectedFilePath != null)
-                Text(
-                  'Archivo seleccionado: $_selectedFilePath',
-                  style: const TextStyle(fontSize: 16),
-                  textAlign: TextAlign.center,
-                ),
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(); // Cerrar el diálogo
-              },
-              child: const Text('Cancelar'),
-            ),
-            ElevatedButton(
-              onPressed: _selectedFilePath != null
-                  ? () {
-                      // Aquí puedes implementar la lógica para firmar el archivo
-                      Navigator.of(context).pop();
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Archivo firmado con éxito.'),
-                        ),
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              scrollable: true,
+              title: const Text('Subir archivo para autenticar la firma'),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  ElevatedButton(
+                    onPressed: () async {
+                      const typeGroup = XTypeGroup(
+                        label: 'files',
+                        // extensions: ['pdf ', 'docx'],
                       );
-                    }
-                  : null, // Deshabilitar si no hay archivo seleccionado
-              child: const Text('Subir y firmar'),
-            ),
-          ],
+                      final XFile? file =
+                          await openFile(acceptedTypeGroups: [typeGroup]);
+
+                      if (file != null) {
+                        setState(() {
+                          localSelectedFile = file;
+                        });
+
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('Archivo seleccionado: ${file.name}'),
+                          ),
+                        );
+                      }
+                    },
+                    style: ElevatedButton.styleFrom(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(5), // Bordes rectos
+                      ),
+                    ),
+                    child: const Text('Seleccionar archivo'),
+                  ),
+                  const SizedBox(height: 10),
+                  if (localSelectedFile != null)
+                    Text(
+                      'Archivo seleccionado: ${localSelectedFile!.name}',
+                      style: const TextStyle(fontSize: 16),
+                      textAlign: TextAlign.center,
+                    ),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop(); // Cerrar el diálogo
+                  },
+                  child: const Text('Cancelar'),
+                ),
+                ElevatedButton(
+                  onPressed: localSelectedFile != null
+                      ? () {
+                          Navigator.of(context).pop();
+                          // Mostrar el diálogo de éxito en el centro de la pantalla
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                title: const Text('Éxito'),
+                                content:
+                                    const Text('Archivo firmado con éxito.'),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                    },
+                                    child: const Text('OK'),
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+                        }
+                      : null, // Deshabilitar si no hay archivo seleccionado
+                  style: ElevatedButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(5), // Bordes rectos
+                    ),
+                  ),
+                  child: const Text('Subir y firmar'),
+                ),
+              ],
+            );
+          },
         );
       },
     );
