@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:taller_1_diplomado/generate_key_page.dart';
 import 'package:taller_1_diplomado/register_page.dart';
+import 'package:taller_1_diplomado/upload_page.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -45,7 +45,7 @@ class _LoginPageState extends State<LoginPage> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => const GenerateKeyPage(),
+        builder: (context) => const UploadPage(),
       ),
     );
   }

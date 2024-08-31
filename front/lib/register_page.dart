@@ -1,5 +1,12 @@
 import 'package:flutter/material.dart';
 
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+// ignore: avoid_web_libraries_in_flutter
+import 'dart:html' as html;
+
+import 'package:taller_1_diplomado/login_page.dart';
+
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
 
@@ -8,6 +15,62 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
+  //Generación de llaves
+
+  Future<void> _sendData() async {
+    const name = 'test';
+    try {
+      final response = await http.post(
+        Uri.parse('http://localhost:5000/guardar_usuario'),
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode({"name": name}),
+      );
+
+      if (response.statusCode >= 200 && response.statusCode < 300) {
+        final responseData = jsonDecode(response.body);
+        final privateKey = responseData['privateKey'];
+        final message = responseData['message'];
+
+        _showAlert(context, 'Éxito', message);
+        _downloadPrivateKey(privateKey, 'private_key');
+      } else {
+        _showAlert(context, 'Error', 'Error al guardar el usuario');
+      }
+    } catch (e) {
+      _showAlert(context, 'Error', 'Error: $e');
+    }
+  }
+
+  void _showAlert(BuildContext context, String title, String content) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(title),
+          content: Text(content),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _downloadPrivateKey(String privateKey, String fileName) {
+    final bytes = utf8.encode(privateKey);
+    final blob = html.Blob([bytes]);
+    final url = html.Url.createObjectUrlFromBlob(blob);
+    html.AnchorElement(href: url)
+      ..setAttribute("download", "$fileName.pem")
+      ..click();
+    html.Url.revokeObjectUrl(url);
+  }
+
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
@@ -16,9 +79,10 @@ class _RegisterPageState extends State<RegisterPage> {
   final TextEditingController _confirmPasswordController =
       TextEditingController();
 
-  void _register() {
+  Future<void> _register() async {
     if (_formKey.currentState!.validate()) {
       // Aquí puedes agregar la lógica de registro, como enviar los datos a un servidor o base de datos.
+      await _sendData();
 
       // Mostrar diálogo de éxito
       showDialog(
@@ -29,9 +93,15 @@ class _RegisterPageState extends State<RegisterPage> {
             content: const Text('¡Te has registrado exitosamente!'),
             actions: [
               TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                  Navigator.of(context).pop(); // Regresa a la página anterior
+                onPressed: () async {
+                  if (context.mounted) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const LoginPage(),
+                      ),
+                    );
+                  }
                 },
                 child: const Text('OK'),
               ),
@@ -183,7 +253,10 @@ class _RegisterPageState extends State<RegisterPage> {
                         child: TextButton(
                           onPressed: () {
                             // Navigate to Login page
-                            Navigator.pop(context);
+
+                            if (context.mounted) {
+                              Navigator.pop(context);
+                            }
                           },
                           child: const Text(
                               '¿Ya tienes una cuenta? Inicia sesión'),
