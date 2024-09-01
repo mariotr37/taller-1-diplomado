@@ -18,7 +18,7 @@ class UserProfilePage extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
             SizedBox(
-              width: MediaQuery.of(context).size.width * 0.4,
+              width: MediaQuery.of(context).size.width * 0.45,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
