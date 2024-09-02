@@ -38,7 +38,7 @@ class _SignatureRequestPageState extends State<SignatureRequestPage> {
           margin: const EdgeInsets.all(46.0),
           decoration: BoxDecoration(
             color: Colors.white,
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(10),
             boxShadow: [
               BoxShadow(
                 color: Colors.grey.withOpacity(0.5),
@@ -60,82 +60,7 @@ class _SignatureRequestPageState extends State<SignatureRequestPage> {
                 ),
               ),
               const SizedBox(height: 20),
-              Table(
-                border: TableBorder.all(color: Colors.black),
-                columnWidths: const {
-                  0: FlexColumnWidth(0.2),
-                  1: FlexColumnWidth(1),
-                  2: FlexColumnWidth(1),
-                  3: FlexColumnWidth(0.2),
-                },
-                children: [
-                  TableRow(
-                    decoration: BoxDecoration(color: Colors.grey[300]),
-                    children: const [
-                      SizedBox.shrink(),
-                      Padding(
-                        padding: EdgeInsets.all(8.0),
-                        child: Text(
-                          'Nombre de usuario',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.all(8.0),
-                        child: Text(
-                          'Nombre archivo',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                      SizedBox.shrink(),
-                    ],
-                  ),
-                  ...requests.asMap().entries.map((entry) {
-                    int index = entry.key;
-                    Map<String, dynamic> request = entry.value;
-                    return TableRow(
-                      children: [
-                        Radio<int>(
-                          value: index,
-                          groupValue: _selectedRequestIndex,
-                          onChanged: (int? value) {
-                            setState(() {
-                              _selectedRequestIndex = value;
-                            });
-                          },
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text(request['userName']),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text(request['fileName']),
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.download),
-                          onPressed: () {
-                            if (_selectedRequestIndex == null) {
-                              _showSelectionDialog();
-                            } else {
-                              _downloadFile(
-                                  request['fileUrl'], request['fileName']);
-                            }
-                          },
-                        ),
-                      ],
-                    );
-                  }),
-                ],
-              ),
+              _buildRequestTable(),
               const SizedBox(height: 30),
               Center(
                 child: ElevatedButton(
@@ -167,6 +92,106 @@ class _SignatureRequestPageState extends State<SignatureRequestPage> {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildRequestTable() {
+    return Table(
+      columnWidths: const {
+        0: FlexColumnWidth(0.1),
+        1: FlexColumnWidth(0.4),
+        2: FlexColumnWidth(0.4),
+        3: FlexColumnWidth(0.1),
+      },
+      border: TableBorder.all(
+        color: Colors.purple[800]!,
+        width: 1.5,
+        borderRadius: BorderRadius.circular(5),
+      ),
+      children: [
+        const TableRow(
+          decoration: BoxDecoration(
+            color: Color.fromARGB(255, 246, 212, 255),
+          ),
+          children: [
+            SizedBox.shrink(),
+            Padding(
+              padding: EdgeInsets.symmetric(vertical: 12.0),
+              child: Text(
+                'Nombre de usuario',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                ),
+              ),
+            ),
+            Padding(
+              padding: EdgeInsets.symmetric(vertical: 12.0),
+              child: Text(
+                'Nombre archivo',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                ),
+              ),
+            ),
+            SizedBox.shrink(),
+          ],
+        ),
+        ...requests.asMap().entries.map((entry) {
+          int index = entry.key;
+          Map<String, dynamic> request = entry.value;
+          return TableRow(
+            decoration: BoxDecoration(
+              color: index.isEven ? Colors.white : Colors.purple[50],
+            ),
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(top: 8.0),
+                child: Radio<int>(
+                  value: index,
+                  groupValue: _selectedRequestIndex,
+                  onChanged: (int? value) {
+                    setState(() {
+                      _selectedRequestIndex = value;
+                    });
+                  },
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 12.0),
+                child: Text(
+                  request['userName'],
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(fontSize: 16),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 12.0),
+                child: Text(
+                  request['fileName'],
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(fontSize: 16),
+                ),
+              ),
+              IconButton(
+                icon: const Icon(Icons.download, color: Colors.purple),
+                onPressed: () {
+                  if (_selectedRequestIndex == null) {
+                    _showSelectionDialog();
+                  } else {
+                    _downloadFile(request['fileUrl'], request['fileName']);
+                  }
+                },
+              ),
+            ],
+          );
+        }),
+      ],
     );
   }
 
@@ -215,7 +240,6 @@ class _SignatureRequestPageState extends State<SignatureRequestPage> {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        // Almacenamos el estado localmente para que no se restablezca al cerrar el diálogo
         XFile? localSelectedFile;
 
         return StatefulBuilder(
@@ -230,7 +254,6 @@ class _SignatureRequestPageState extends State<SignatureRequestPage> {
                     onPressed: () async {
                       const typeGroup = XTypeGroup(
                         label: 'files',
-                        // extensions: ['pdf ', 'docx'],
                       );
                       final XFile? file =
                           await openFile(acceptedTypeGroups: [typeGroup]);
@@ -274,7 +297,6 @@ class _SignatureRequestPageState extends State<SignatureRequestPage> {
                   onPressed: localSelectedFile != null
                       ? () {
                           Navigator.of(context).pop();
-                          // Mostrar el diálogo de éxito en el centro de la pantalla
                           showDialog(
                             context: context,
                             builder: (BuildContext context) {

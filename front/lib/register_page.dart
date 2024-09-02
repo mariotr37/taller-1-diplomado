@@ -246,7 +246,13 @@ class _RegisterPageState extends State<RegisterPage> {
                         style: ElevatedButton.styleFrom(
                           minimumSize: const Size(double.infinity, 50),
                         ),
-                        child: const Center(child: Text('Registrarse')),
+                        child: const Center(
+                          child: Text(
+                            'Registrarse',
+                            style: TextStyle(
+                                fontSize: 16, fontWeight: FontWeight.bold),
+                          ),
+                        ),
                       ),
                       const SizedBox(height: 20),
                       Center(

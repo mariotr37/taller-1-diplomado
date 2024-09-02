@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:taller_1_diplomado/home_page.dart';
 import 'package:taller_1_diplomado/register_page.dart';
@@ -172,7 +173,14 @@ class _LoginPageState extends State<LoginPage> {
                             style: ElevatedButton.styleFrom(
                               minimumSize: const Size(double.infinity, 50),
                             ),
-                            child: const Center(child: Text('Iniciar sesión')),
+                            child: const Center(
+                                child: Text(
+                              'Iniciar sesión',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            )),
                           ),
                           const SizedBox(height: 10),
                           Center(
