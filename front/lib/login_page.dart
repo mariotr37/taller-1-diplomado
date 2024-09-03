@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:taller_1_diplomado/generate_key_page.dart';
+import 'package:flutter/rendering.dart';
+import 'package:flutter/widgets.dart';
+import 'package:taller_1_diplomado/home_page.dart';
 import 'package:taller_1_diplomado/register_page.dart';
 
 class LoginPage extends StatefulWidget {
@@ -45,7 +47,7 @@ class _LoginPageState extends State<LoginPage> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => const GenerateKeyPage(),
+        builder: (context) => const HomePage(),
       ),
     );
   }
@@ -171,7 +173,14 @@ class _LoginPageState extends State<LoginPage> {
                             style: ElevatedButton.styleFrom(
                               minimumSize: const Size(double.infinity, 50),
                             ),
-                            child: const Center(child: Text('Iniciar sesión')),
+                            child: const Center(
+                                child: Text(
+                              'Iniciar sesión',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            )),
                           ),
                           const SizedBox(height: 10),
                           Center(
@@ -201,32 +210,55 @@ class _LoginPageState extends State<LoginPage> {
                           bottomRight: Radius.circular(20),
                         ),
                       ),
-                      child: const Column(
+                      child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           // Placeholder para la imagen
-                          SizedBox(
-                            width: 150,
-                            height: 150,
-                          ),
-                          SizedBox(height: 20),
-                          Text(
-                            'Revisa el progreso de tu proyecto',
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
+                          // Sección de ilustración
+                          Expanded(
+                            child: Container(
+                              padding: const EdgeInsets.all(20),
+                              decoration: const BoxDecoration(
+                                color: Color.fromARGB(239, 120, 34, 174),
+                                borderRadius: BorderRadius.only(
+                                  topRight: Radius.circular(20),
+                                  bottomRight: Radius.circular(20),
+                                ),
+                              ),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  // Imagen para la ilustración
+                                  ClipRRect(
+                                    borderRadius: BorderRadius.circular(20.0),
+                                    child: Image.asset(
+                                      './assets/signature_image.png',
+                                      width: 250,
+                                      height: 250,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 20),
+                                  const Text(
+                                    'Revisa el progreso de tu proyecto',
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white,
+                                    ),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                  const SizedBox(height: 10),
+                                  const Text(
+                                    'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur ac ultrices odio.',
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      color: Colors.white,
+                                    ),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ],
+                              ),
                             ),
-                            textAlign: TextAlign.center,
-                          ),
-                          SizedBox(height: 10),
-                          Text(
-                            'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur ac ultrices odio.',
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: Colors.white,
-                            ),
-                            textAlign: TextAlign.center,
                           ),
                         ],
                       ),
