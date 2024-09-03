@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'package:flutter_file_downloader/flutter_file_downloader.dart';
 import 'package:file_selector/file_selector.dart';
@@ -6,7 +8,7 @@ class SignatureRequestPage extends StatefulWidget {
   const SignatureRequestPage({super.key});
 
   @override
-  _SignatureRequestPageState createState() => _SignatureRequestPageState();
+  State<SignatureRequestPage> createState() => _SignatureRequestPageState();
 }
 
 class _SignatureRequestPageState extends State<SignatureRequestPage> {
